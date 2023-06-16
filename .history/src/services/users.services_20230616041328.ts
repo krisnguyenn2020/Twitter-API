@@ -15,13 +15,8 @@ class UsersServices {
         user_id,
         token_type: TokenType.AccessToken
       }
-    })
-  }
-  private signRefreshToken(user_id: string) {
-    return signToken({
-      payload: {
-        user_id,
-        token_type: TokenType.RefreshToken
+      , options: {
+        expiresIn: '1d'
       }
     })
   }
@@ -36,17 +31,7 @@ class UsersServices {
         password: hashPassword(payload.password)
       })
     )
-    // Sign access token and refresh token after register successfully asynchorously
-    const user_id = result.insertedId.toString()
-    const [access_token, refresh_token] = await Promise.all([
-      this.signAccessToken(user_id),
-      this.signRefreshToken(user_id)
-    ])
-     // Promise.all() to run multiple promises at the same time
-    return [{
-      access_token,
-      refresh_token
-    }, result]
+    return result
   }
   async checkEmailExisted(email: string) {
     const user = await databaseService.users.findOne({ email })

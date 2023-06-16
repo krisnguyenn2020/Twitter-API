@@ -43,10 +43,10 @@ class UsersServices {
       this.signRefreshToken(user_id)
     ])
      // Promise.all() to run multiple promises at the same time
-    return [{
+    return {
       access_token,
       refresh_token
-    }, result]
+    }
   }
   async checkEmailExisted(email: string) {
     const user = await databaseService.users.findOne({ email })
