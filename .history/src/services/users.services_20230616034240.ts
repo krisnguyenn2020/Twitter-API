@@ -4,14 +4,13 @@ import User from '~/models/schemas/User.schema'
 import { hashPassword } from '../utils/crypto';
 // Class style
 
-
+// Hash password using SHA-256
 class UsersServices {
   async register(payload: RegisterReqBody) {
     const result = await databaseService.users.insertOne(
       new User({
         ...payload,
         date_of_birth: new Date(payload.date_of_birth),
-        // Hash password using SHA-256
         password: hashPassword(payload.password)
       })
     )

@@ -1,18 +1,14 @@
 import { RegisterReqBody } from '~/models/requests/User.requests'
 import databaseService from './database.services'
 import User from '~/models/schemas/User.schema'
-import { hashPassword } from '../utils/crypto';
 // Class style
-
-
 class UsersServices {
   async register(payload: RegisterReqBody) {
+
     const result = await databaseService.users.insertOne(
       new User({
         ...payload,
-        date_of_birth: new Date(payload.date_of_birth),
-        // Hash password using SHA-256
-        password: hashPassword(payload.password)
+        date_of_birth: new Date(payload.date_of_birth)
       })
     )
     return result
