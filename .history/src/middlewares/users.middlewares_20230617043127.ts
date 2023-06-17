@@ -17,14 +17,11 @@ export const loginValidator = validate(
         errorMessage: USERS_MESSAGES.EMAIL_IS_INVALID
       },
       custom: {
-        options: async (value, { req }) => {
+        options: async (value) => {
           const user = await databaseService.users.findOne({ email: value })
-          // console.log("🚀 ~ file: users.middlewares.ts:22 ~ options: ~ user:", user)
           if (user === null) {
             throw new Error(USERS_MESSAGES.USER_NOT_FOUND)
           }
-          req.user = user
-          // console.log("🚀 ~ file: users.middlewares.ts:26 ~ options: ~ req.user:", req.user)
           return true
         }
       }
@@ -43,8 +40,10 @@ export const loginValidator = validate(
         }
       }
     }
-  })
+  }
+  )
 )
+
 
 export const registerValidator = validate(
   checkSchema({

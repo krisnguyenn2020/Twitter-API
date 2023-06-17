@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express' // type for req, res, next
 import { checkSchema } from 'express-validator' // type for checkSchema
 import { USERS_MESSAGES } from '~/constants/messages'
+import { ErrorWithStatus } from '~/models/Errors'
 import databaseService from '~/services/database.services'
-
 import userServices from '~/services/users.services'
 import { validate } from '~/utils/validation'
 
@@ -17,14 +17,11 @@ export const loginValidator = validate(
         errorMessage: USERS_MESSAGES.EMAIL_IS_INVALID
       },
       custom: {
-        options: async (value, { req }) => {
-          const user = await databaseService.users.findOne({ email: value })
-          // console.log("🚀 ~ file: users.middlewares.ts:22 ~ options: ~ user:", user)
-          if (user === null) {
+        options: async (value) => {
+          const isEmailExisted = await userServices.checkEmailExisted(value)
+          if (!isEmailExisted) {
             throw new Error(USERS_MESSAGES.USER_NOT_FOUND)
           }
-          req.user = user
-          // console.log("🚀 ~ file: users.middlewares.ts:26 ~ options: ~ req.user:", req.user)
           return true
         }
       }
@@ -43,8 +40,10 @@ export const loginValidator = validate(
         }
       }
     }
-  })
+  }
+  )
 )
+
 
 export const registerValidator = validate(
   checkSchema({

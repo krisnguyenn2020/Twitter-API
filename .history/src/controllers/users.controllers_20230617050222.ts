@@ -3,15 +3,12 @@ import userServices from '~/services/users.services'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { RegisterReqBody } from '~/models/requests/User.requests'
 
-export  const loginController = async (req: Request, res: Response) => {
+export const loginController = (req: Request, res: Response) => {
   const { user }: any = req
-  console.log("🚀 ~ file: users.controllers.ts:8 ~ loginController ~ user:", user)
-  const { _id } = user
-  console.log("🚀 ~ file: users.controllers.ts:10 ~ loginController ~ user_id:", _id)
-  const result = await userServices.login(_id.toString)
+  const { user_id } = user
+  userServices.login(user_id.toString)
   return res.json({
-    message: 'Login successful',
-    result
+    message: 'Login successful'
   })
 }
 // Need to add async/await to the controller

@@ -19,12 +19,12 @@ export const loginValidator = validate(
       custom: {
         options: async (value, { req }) => {
           const user = await databaseService.users.findOne({ email: value })
-          // console.log("🚀 ~ file: users.middlewares.ts:22 ~ options: ~ user:", user)
+          console.log("🚀 ~ file: users.middlewares.ts:22 ~ options: ~ user:", user)
           if (user === null) {
             throw new Error(USERS_MESSAGES.USER_NOT_FOUND)
           }
           req.user = user
-          // console.log("🚀 ~ file: users.middlewares.ts:26 ~ options: ~ req.user:", req.user)
+          console.log("🚀 ~ file: users.middlewares.ts:26 ~ options: ~ req.user:", req.user)
           return true
         }
       }
