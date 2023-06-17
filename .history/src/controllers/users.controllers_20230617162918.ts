@@ -2,18 +2,15 @@ import { NextFunction, Request, Response } from 'express'
 import userServices from '~/services/users.services'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { RegisterReqBody } from '~/models/requests/User.requests'
-import { ObjectId } from 'mongodb'
-import User from '~/models/schemas/User.schema'
-import { USERS_MESSAGES } from '~/constants/messages'
 
-export const loginController = async (req: Request, res: Response) => {
-  const user = req.user as User
+export  const loginController = async (req: Request, res: Response) => {
+  const { user }: any = req
   // console.log("🚀 ~ file: users.controllers.ts:8 ~ loginController ~ user:", user)
-  const user_id = user._id as ObjectId
+  const { _id } = user
   // console.log("🚀 ~ file: users.controllers.ts:10 ~ loginController ~ user_id:", _id)
-  const result = await userServices.login(user_id.toString())
+  const result = await userServices.login(_id.toString)
   return res.json({
-    message: USERS_MESSAGES.LOGIN_SUCCESS,
+    message: 'Login successful',
     result
   })
 }
@@ -28,7 +25,7 @@ export const registerController = async (
   const result = await userServices.register(req.body)
   console.log('🚀 ~ file: users.controllers.ts:28 ~ result:', result)
   return res.json({
-    message: USERS_MESSAGES.REGISTER_SUCCESS,
+    message: 'Register successful',
     result
   })
 }

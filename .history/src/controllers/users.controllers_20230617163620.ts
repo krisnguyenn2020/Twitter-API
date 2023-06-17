@@ -4,7 +4,6 @@ import { ParamsDictionary } from 'express-serve-static-core'
 import { RegisterReqBody } from '~/models/requests/User.requests'
 import { ObjectId } from 'mongodb'
 import User from '~/models/schemas/User.schema'
-import { USERS_MESSAGES } from '~/constants/messages'
 
 export const loginController = async (req: Request, res: Response) => {
   const user = req.user as User
@@ -13,7 +12,7 @@ export const loginController = async (req: Request, res: Response) => {
   // console.log("🚀 ~ file: users.controllers.ts:10 ~ loginController ~ user_id:", _id)
   const result = await userServices.login(user_id.toString())
   return res.json({
-    message: USERS_MESSAGES.LOGIN_SUCCESS,
+    message: 'Login successful',
     result
   })
 }
@@ -28,7 +27,7 @@ export const registerController = async (
   const result = await userServices.register(req.body)
   console.log('🚀 ~ file: users.controllers.ts:28 ~ result:', result)
   return res.json({
-    message: USERS_MESSAGES.REGISTER_SUCCESS,
+    message: 'Register successful',
     result
   })
 }

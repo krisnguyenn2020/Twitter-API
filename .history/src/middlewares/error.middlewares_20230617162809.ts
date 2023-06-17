@@ -15,6 +15,6 @@ export const defaultErrorHandler = (err: any, req: Request, res: Response, next:
   // console.log('🚀 ~ file: error.middlewares.ts:1 ~ defaultErrorHandler ~ err', err)
   res.status(err.status || HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
     message: err.message || 'Something went wrong',
-    errorInfo: omit(err, ['stack'])
+    errorInfo: err
   })
 }

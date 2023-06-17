@@ -28,7 +28,7 @@ export const registerController = async (
   const result = await userServices.register(req.body)
   console.log('🚀 ~ file: users.controllers.ts:28 ~ result:', result)
   return res.json({
-    message: USERS_MESSAGES.REGISTER_SUCCESS,
+    message: 'Register successful',
     result
   })
 }
