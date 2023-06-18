@@ -6,9 +6,8 @@ import { signToken } from '~/utils/jwt'
 import { TokenType } from '~/constants/enums'
 import RefreshToken from '~/models/schemas/RefreshToken.schema'
 import { ObjectId } from 'mongodb'
-import { config } from 'dotenv'
 // Class style
-config()
+
 class UsersServices {
   private signAccessToken(user_id: string) {
     return signToken({
@@ -66,8 +65,6 @@ class UsersServices {
   }
 
   async login(user_id: string) {
-    // Access token was not stored in database because it is stateless
-    // Return access token to client so that client can store it in cookie or local storage
     const [access_token, refresh_token] = await this.signAccessAndRefreshToken(user_id)
     await databaseService.refreshToken.insertOne(
       new RefreshToken({ user_id: new ObjectId(user_id), token: refresh_token })

@@ -8,8 +8,6 @@ import { validate } from '~/utils/validation'
 import { hashPassword } from '../utils/crypto'
 import RefreshToken from '../../.history/src/models/schemas/RefreshToken.schema_20230617222639'
 import { verifyToken } from '~/utils/jwt'
-import { ErrorWithStatus } from '~/models/Errors'
-import HTTP_STATUS from '~/constants/httpStatus'
 
 export const loginValidator = validate(
   checkSchema(
@@ -153,13 +151,10 @@ export const accessTokenValidator = validate(
           // Check if have Authorization header
           options: async (value: string, { req }) => {
             const access_token = value.split(' ')[1]
-            console.log('🚀 ~ file: users.middlewares.ts:154 ~ options: ~ access_token:', access_token)
+            console.log("🚀 ~ file: users.middlewares.ts:154 ~ options: ~ access_token:", access_token)
 
-            if (!access_token) {
-              throw new ErrorWithStatus({
-                message: USERS_MESSAGES.ACCESS_TOKEN_IS_REQUIRED,
-                status: HTTP_STATUS.UNAUTHORIZED
-              })
+            if (access_token === undefined || access_token === null || access_token === '') {
+              throw new Error(USERS_MESSAGES.ACCESS_TOKEN_IS_REQUIRED)
             }
             const decoded_authorization = await verifyToken({ token: access_token })
             req.decoded_authorization = decoded_authorization
@@ -168,6 +163,6 @@ export const accessTokenValidator = validate(
         }
       }
     },
-    ['headers']
+    ['body']
   )
 )

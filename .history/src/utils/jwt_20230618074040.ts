@@ -31,7 +31,7 @@ export const verifyToken = ({
   secretOrPublicKey = process.env.JWT_SECRET as string
 }: {
   token: string
-  secretOrPublicKey?: string
+  secretOrPublicKey: string
 }) => {
   return new Promise<JwtPayload>((resolve, reject) => {
     jwt.verify(token, secretOrPublicKey, (err, decoded) => {

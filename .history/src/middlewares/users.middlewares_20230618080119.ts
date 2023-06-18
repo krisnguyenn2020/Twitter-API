@@ -155,7 +155,7 @@ export const accessTokenValidator = validate(
             const access_token = value.split(' ')[1]
             console.log('🚀 ~ file: users.middlewares.ts:154 ~ options: ~ access_token:', access_token)
 
-            if (!access_token) {
+            if (access_token === '') {
               throw new ErrorWithStatus({
                 message: USERS_MESSAGES.ACCESS_TOKEN_IS_REQUIRED,
                 status: HTTP_STATUS.UNAUTHORIZED
@@ -168,6 +168,6 @@ export const accessTokenValidator = validate(
         }
       }
     },
-    ['headers']
+    ['body']
   )
 )

@@ -1,5 +1,5 @@
 import { config } from 'dotenv'
-import jwt, { JwtPayload, SignOptions } from 'jsonwebtoken'
+import jwt, { SignOptions } from 'jsonwebtoken'
 config()
 // pass parameter an object that contains payload, secret, options
 // secret and options already have default value
@@ -26,19 +26,14 @@ export const signToken = (
     })
   })
 
-export const verifyToken = ({
-  token,
-  secretOrPublicKey = process.env.JWT_SECRET as string
-}: {
-  token: string
-  secretOrPublicKey?: string
-}) => {
-  return new Promise<JwtPayload>((resolve, reject) => {
+export const verifyToken = ({ token, secretOrPublicKey = process.env.JWT_SECRET }: { token: string, secretOrPublicKey: string }) => { 
+  return new Promise((resolve, reject) => {
     jwt.verify(token, secretOrPublicKey, (err, decoded) => {
       if (err) {
-        throw reject(err)
+        return reject(err)
       }
-      resolve(decoded as JwtPayload)
+      resolve(decoded)
     })
   })
 }
+
