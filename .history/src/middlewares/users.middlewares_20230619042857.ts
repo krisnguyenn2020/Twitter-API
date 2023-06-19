@@ -11,7 +11,6 @@ import { verifyToken } from '~/utils/jwt'
 import { ErrorWithStatus } from '~/models/Errors'
 import HTTP_STATUS from '~/constants/httpStatus'
 import { JsonWebTokenError } from 'jsonwebtoken'
-import { capitalize } from 'lodash'
 
 export const loginValidator = validate(
   checkSchema(
@@ -163,20 +162,20 @@ export const accessTokenValidator = validate(
             }
             try {
               const decoded_authorization = await verifyToken({ token: access_token })
-              // semi-colon because (req as Request()
-              ;(req as Request).decoded_authorization = decoded_authorization
-            } catch (error) {
+              req.decoded_authorization = decoded_authorization
+            } catch (error: JsonWebTokenError) {
               throw new ErrorWithStatus({
-                message: capitalize((error as JsonWebTokenError).message),
+                message: error.message,
                 status: HTTP_STATUS.UNAUTHORIZED
+
               })
-            }
+          }
+            
             return true
           }
         }
-      }
-    },
-    ['headers']
+      },
+      ['headers']
   )
 )
 export const refreshTokenValidator = validate(
@@ -197,6 +196,7 @@ export const refreshTokenValidator = validate(
               throw new ErrorWithStatus({
                 message: USERS_MESSAGES.USED_REFRESH_TOKEN_OR_NOT_EXIST,
                 status: HTTP_STATUS.UNAUTHORIZED
+
               })
             }
 
@@ -205,7 +205,7 @@ export const refreshTokenValidator = validate(
             // console.log(2)
             if (error instanceof JsonWebTokenError) {
               throw new ErrorWithStatus({
-                message: capitalize(error.message),
+                message: error.message,
                 status: HTTP_STATUS.UNAUTHORIZED
               })
             }

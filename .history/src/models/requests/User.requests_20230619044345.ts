@@ -13,6 +13,3 @@ export interface TokenPayload extends JwtPayload {
   _id: string
   token_type: TokenType
 }
-export interface LogoutReqBody {
-  refresh_token: string
-}

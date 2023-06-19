@@ -39,6 +39,6 @@ export const logoutController = async (req: Request<ParamsDictionary, any, Logou
 
   const result = await userServices.logout(refresh_token)
   return res.json({
-    message: USERS_MESSAGES.LOGOUT_SUCCESS
+    message: USERS_MESSAGES.LOGOUT_SUCCESS,
   })
 }

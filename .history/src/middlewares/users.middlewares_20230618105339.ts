@@ -6,12 +6,10 @@ import databaseService from '~/services/database.services'
 import userServices from '~/services/users.services'
 import { validate } from '~/utils/validation'
 import { hashPassword } from '../utils/crypto'
-
+import RefreshToken from '../../.history/src/models/schemas/RefreshToken.schema_20230617222639'
 import { verifyToken } from '~/utils/jwt'
 import { ErrorWithStatus } from '~/models/Errors'
 import HTTP_STATUS from '~/constants/httpStatus'
-import { JsonWebTokenError } from 'jsonwebtoken'
-import { capitalize } from 'lodash'
 
 export const loginValidator = validate(
   checkSchema(
@@ -155,22 +153,16 @@ export const accessTokenValidator = validate(
           // Check if have Authorization header
           options: async (value: string, { req }) => {
             const access_token = value.split(' ')[1]
+            console.log('🚀 ~ file: users.middlewares.ts:154 ~ options: ~ access_token:', access_token)
+
             if (!access_token) {
               throw new ErrorWithStatus({
                 message: USERS_MESSAGES.ACCESS_TOKEN_IS_REQUIRED,
                 status: HTTP_STATUS.UNAUTHORIZED
               })
             }
-            try {
-              const decoded_authorization = await verifyToken({ token: access_token })
-              // semi-colon because (req as Request()
-              ;(req as Request).decoded_authorization = decoded_authorization
-            } catch (error) {
-              throw new ErrorWithStatus({
-                message: capitalize((error as JsonWebTokenError).message),
-                status: HTTP_STATUS.UNAUTHORIZED
-              })
-            }
+            const decoded_authorization = await verifyToken({ token: access_token })
+            req.decoded_authorization = decoded_authorization
             return true
           }
         }
@@ -180,41 +172,34 @@ export const accessTokenValidator = validate(
   )
 )
 export const refreshTokenValidator = validate(
-  checkSchema({
-    refresh_token: {
-      notEmpty: {
-        errorMessage: USERS_MESSAGES.REFRESH_TOKEN_IS_REQUIRED
-      },
-      custom: {
-        options: async (value: string, { req }) => {
-          try {
-            const [decoded_refresh_token, refresh_token] = await Promise.all([
-              verifyToken({ token: value }),
-              databaseService.refreshToken.findOne({ token: value })
-            ])
-            if (refresh_token === null) {
-              // console.log(1)
+  checkSchema(
+    {
+      refresh_token: {
+        notEmpty: {
+          errorMessage: USERS_MESSAGES.REFRESH_TOKEN_IS_REQUIRED
+        },
+
+        custom: {
+          options: async (value: string, { req }) => {
+            try {
+              const decoded_refresh_token = await verifyToken({ token: value })
+              console.log(
+                '🚀 ~ file: users.middlewares.ts:187 ~ options: ~ decoded_refresh_token:',
+                req
+              )
+              req.decoded_refresh_token = decoded_refresh_token
+            } catch (error) {
               throw new ErrorWithStatus({
-                message: USERS_MESSAGES.USED_REFRESH_TOKEN_OR_NOT_EXIST,
+                message: USERS_MESSAGES.REFRESH_TOKEN_IS_INVALID,
                 status: HTTP_STATUS.UNAUTHORIZED
               })
             }
 
-            req.decoded_refresh_token = decoded_refresh_token
-          } catch (error) {
-            // console.log(2)
-            if (error instanceof JsonWebTokenError) {
-              throw new ErrorWithStatus({
-                message: capitalize(error.message),
-                status: HTTP_STATUS.UNAUTHORIZED
-              })
-            }
-            throw error
+            return req
           }
-
-          return true
         }
       }
-    }
-  })
+    },
+    ['body']
+  )
 )

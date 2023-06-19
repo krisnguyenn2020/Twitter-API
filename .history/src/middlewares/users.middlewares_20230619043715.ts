@@ -163,11 +163,10 @@ export const accessTokenValidator = validate(
             }
             try {
               const decoded_authorization = await verifyToken({ token: access_token })
-              // semi-colon because (req as Request()
-              ;(req as Request).decoded_authorization = decoded_authorization
+              req.decoded_authorization = decoded_authorization
             } catch (error) {
               throw new ErrorWithStatus({
-                message: capitalize((error as JsonWebTokenError).message),
+                message: capitalize((error as JsonWebTokenError).message) ,
                 status: HTTP_STATUS.UNAUTHORIZED
               })
             }
@@ -197,6 +196,7 @@ export const refreshTokenValidator = validate(
               throw new ErrorWithStatus({
                 message: USERS_MESSAGES.USED_REFRESH_TOKEN_OR_NOT_EXIST,
                 status: HTTP_STATUS.UNAUTHORIZED
+
               })
             }
 
@@ -205,7 +205,7 @@ export const refreshTokenValidator = validate(
             // console.log(2)
             if (error instanceof JsonWebTokenError) {
               throw new ErrorWithStatus({
-                message: capitalize(error.message),
+                message: error.message,
                 status: HTTP_STATUS.UNAUTHORIZED
               })
             }
