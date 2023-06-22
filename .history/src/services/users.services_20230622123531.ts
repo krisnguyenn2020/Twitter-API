@@ -3,7 +3,7 @@ import databaseService from './database.services'
 import User from '~/models/schemas/User.schema'
 import { hashPassword } from '../utils/crypto'
 import { signToken } from '~/utils/jwt'
-import { TokenType, UserVerifyStatus } from '~/constants/enums'
+import { TokenType } from '~/constants/enums'
 import RefreshToken from '~/models/schemas/RefreshToken.schema'
 import { ObjectId } from 'mongodb'
 import { config } from 'dotenv'
@@ -53,7 +53,6 @@ class UsersServices {
 
   async register(payload: RegisterReqBody) {
     const user_id = new ObjectId()
-    console.log("🚀 ~ file: users.services.ts:56 ~ UsersServices ~ register ~ user_id:", user_id)
     const email_verify_token = await this.signEmailVerifyToken(user_id.toString())
     console.log('🚀 ~ file: users.services.ts:57 ~ UsersServices ~ register ~ email_verify_token:', email_verify_token)
     await databaseService.users.insertOne(
@@ -103,8 +102,6 @@ class UsersServices {
     }
   }
   async verifyEmail(user_id: string) {
-    // time: Create updated data
-    // time: MongoDB updateOne is after create updated data
     const [token] = await Promise.all([
       this.signAccessAndRefreshToken(user_id),
       await databaseService.users.updateOne(
@@ -112,10 +109,8 @@ class UsersServices {
         {
           $set: {
             email_verify_token: '',
-            verify: UserVerifyStatus.Verified
-            // updated_at: new Date()
-          },
-          $currentDate: { updated_at: true }
+            updated_at: new Date()
+          }
         }
       )
     ])
@@ -125,27 +120,6 @@ class UsersServices {
       refresh_token
     }
   }
-  async resendVerifyEmail(user_id: string) {
-    const email_verify_token = await this.signEmailVerifyToken(user_id)
-    // Gỉa bộ gửi email
-    console.log('Rensend verify email: ', email_verify_token)
-
-    // Cập nhật lại giá trị email_verify_token trong document user
-    await databaseService.users.updateOne(
-      { _id: new ObjectId(user_id) },
-      {
-        $set: {
-          email_verify_token
-        },
-        $currentDate: {
-          updated_at: true
-        }
-      }
-    )
-    return {
-      message: USERS_MESSAGES.RESEND_VERIFY_EMAIL_SUCCESS
-    }
-  }
 }
-const usersService = new UsersServices()
-export default usersService
+const userServices = new UsersServices()
+export default userServices

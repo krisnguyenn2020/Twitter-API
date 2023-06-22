@@ -53,9 +53,8 @@ class UsersServices {
 
   async register(payload: RegisterReqBody) {
     const user_id = new ObjectId()
-    console.log("🚀 ~ file: users.services.ts:56 ~ UsersServices ~ register ~ user_id:", user_id)
     const email_verify_token = await this.signEmailVerifyToken(user_id.toString())
-    console.log('🚀 ~ file: users.services.ts:57 ~ UsersServices ~ register ~ email_verify_token:', email_verify_token)
+    // console.log('🚀 ~ file: users.services.ts:57 ~ UsersServices ~ register ~ email_verify_token:', email_verify_token)
     await databaseService.users.insertOne(
       // This object User only contains the fields that we want to insert into the database
       new User({
@@ -147,5 +146,5 @@ class UsersServices {
     }
   }
 }
-const usersService = new UsersServices()
-export default usersService
+const userServices = new UsersServices()
+export default usersServices

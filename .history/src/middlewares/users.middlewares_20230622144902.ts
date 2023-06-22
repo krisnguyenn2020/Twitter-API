@@ -171,7 +171,6 @@ export const accessTokenValidator = validate(
               })
             }
             try {
-              console.log(1111)
               const decoded_authorization = await verifyToken({
                 token: access_token,
                 secretOrPublicKey: process.env.JWT_SECRET_ACCESS_TOKEN as string

@@ -53,7 +53,6 @@ class UsersServices {
 
   async register(payload: RegisterReqBody) {
     const user_id = new ObjectId()
-    console.log("🚀 ~ file: users.services.ts:56 ~ UsersServices ~ register ~ user_id:", user_id)
     const email_verify_token = await this.signEmailVerifyToken(user_id.toString())
     console.log('🚀 ~ file: users.services.ts:57 ~ UsersServices ~ register ~ email_verify_token:', email_verify_token)
     await databaseService.users.insertOne(
@@ -112,7 +111,7 @@ class UsersServices {
         {
           $set: {
             email_verify_token: '',
-            verify: UserVerifyStatus.Verified
+            verify: UserVerifyStatus.Verified,
             // updated_at: new Date()
           },
           $currentDate: { updated_at: true }
@@ -125,27 +124,6 @@ class UsersServices {
       refresh_token
     }
   }
-  async resendVerifyEmail(user_id: string) {
-    const email_verify_token = await this.signEmailVerifyToken(user_id)
-    // Gỉa bộ gửi email
-    console.log('Rensend verify email: ', email_verify_token)
-
-    // Cập nhật lại giá trị email_verify_token trong document user
-    await databaseService.users.updateOne(
-      { _id: new ObjectId(user_id) },
-      {
-        $set: {
-          email_verify_token
-        },
-        $currentDate: {
-          updated_at: true
-        }
-      }
-    )
-    return {
-      message: USERS_MESSAGES.RESEND_VERIFY_EMAIL_SUCCESS
-    }
-  }
 }
-const usersService = new UsersServices()
-export default usersService
+const userServices = new UsersServices()
+export default userServices

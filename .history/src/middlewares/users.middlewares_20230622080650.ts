@@ -163,7 +163,7 @@ export const accessTokenValidator = validate(
           options: async (value: string, { req }) => {
             // console.log(12)
             const access_token = (value || '').split(' ')[1]
-            // console.log(access_token)
+            console.log(access_token)
             if (!access_token) {
               throw new ErrorWithStatus({
                 message: USERS_MESSAGES.ACCESS_TOKEN_IS_REQUIRED,
@@ -171,13 +171,12 @@ export const accessTokenValidator = validate(
               })
             }
             try {
-              console.log(1111)
               const decoded_authorization = await verifyToken({
                 token: access_token,
                 secretOrPublicKey: process.env.JWT_SECRET_ACCESS_TOKEN as string
               })
-                // semi-colon because (req as Request()
-                ; (req as Request).decoded_authorization = decoded_authorization
+              // semi-colon because (req as Request()
+              ;(req as Request).decoded_authorization = decoded_authorization
               console.log(1)
             } catch (error) {
               throw new ErrorWithStatus({
@@ -237,32 +236,13 @@ export const refreshTokenValidator = validate(
   })
 )
 
-export const emailVerifyTokenValidator = validate(
-  checkSchema({
-    email_verify_token: {
-      trim: true,
-      custom: {
-        options: async (value: string, { req }) => {
-          if (!value) {
-            throw new ErrorWithStatus({
-              message: USERS_MESSAGES.EMAIL_VERIFY_TOKEN_IS_REQUIRED,
-              status: HTTP_STATUS.UNAUTHORIZED
-            })
-          }
-          try {
-            const decoded_email_verify_token = await verifyToken({
-              token: value,
-              secretOrPublicKey: process.env.JWT_SECRET_EMAIL_VERIFY_TOKEN as string
-            });
-            (req as Request).decoded_email_verify_token = decoded_email_verify_token
-          } catch (error) {
-            throw new ErrorWithStatus({
-              message: capitalize((error as JsonWebTokenError).message),
-              status: HTTP_STATUS.UNAUTHORIZED
-            })
-          }
-        }
-      }
-    }
-  })
-)
+// export const verifyEmailValidator = validate(
+//   checkSchema({
+//     email_verify_token: {
+//       notEmpty: {
+//         errorMessage: USERS_MESSAGES.EMAIL_VERIFY_TOKEN_IS_REQUIRED
+//       },
+//       custom: {}
+//     }
+//   })
+// )
