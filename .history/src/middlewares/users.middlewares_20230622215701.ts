@@ -59,7 +59,7 @@ const forgotPasswordTokenSchema: ParamSchema = {
   trim: true,
   custom: {
     options: async (value: string, { req }) => {
-      console.log(req.body)
+      console.log(value)
       if (!value) {
         throw new ErrorWithStatus({
           message: USERS_MESSAGES.FORGOT_PASSWORD_TOKEN_IS_REQUIRED,
@@ -333,9 +333,8 @@ export const forgotPasswordValidator = validate(
 export const verifyForgotPasswordTokenValidator = validate(
   checkSchema(
     {
-      forgot_password_token: forgotPasswordTokenSchema
-    },
-    ['body']
+      forgotPasswordToken: forgotPasswordTokenSchema,
+    }, ['body']
   )
 )
 export const resetPasswordValidator = validate(

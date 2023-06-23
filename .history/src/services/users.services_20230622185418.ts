@@ -66,7 +66,7 @@ class UsersServices {
 
   async register(payload: RegisterReqBody) {
     const user_id = new ObjectId()
-    console.log('🚀 ~ file: users.services.ts:56 ~ UsersServices ~ register ~ user_id:', user_id)
+    console.log("🚀 ~ file: users.services.ts:56 ~ UsersServices ~ register ~ user_id:", user_id)
     const email_verify_token = await this.signEmailVerifyToken(user_id.toString())
     // console.log('🚀 ~ file: users.services.ts:57 ~ UsersServices ~ register ~ email_verify_token:', email_verify_token)
     await databaseService.users.insertOne(
@@ -159,36 +159,9 @@ class UsersServices {
       message: USERS_MESSAGES.RESEND_VERIFY_EMAIL_SUCCESS
     }
   }
-  async forgotPassword(user_id: string) {
-    const forgot_password_token = await this.signForgotPasswordToken(user_id)
-    await databaseService.users.updateOne({ _id: new ObjectId(user_id) }, [
-      {
-        $set: {
-          forgot_password_token,
-          updated_at: '$$NOW'
-        }
-      }
-    ])
-    // send email to client : https://twitter.com/users/forgot-password?token=token
-    console.log('Forgot password token: ', forgot_password_token)
-    return {
-      message: USERS_MESSAGES.VERIFY_FORGOT_PASSWORD_SUCCESS
-    }
-  }
-  async resetPassword(user_id: string, password: string) {
-    await databaseService.users.updateOne(
-      { _id: new ObjectId(user_id) },
-      [{
-        $set: {
-          forgot_password_token: '',
-          password: hashPassword(password),
-          updated_at: '$$NOW',
-        }
-      }]
-    )
-    return {
-      message: USERS_MESSAGES.RESET_PASSWORD_SUCCESS
-    }
+  async forgotPassword(email: string) {
+    const forgot_password_token = await this.signForgotPasswordToken(email)
+
   }
 }
 const usersService = new UsersServices()

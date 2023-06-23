@@ -186,9 +186,6 @@ class UsersServices {
         }
       }]
     )
-    return {
-      message: USERS_MESSAGES.RESET_PASSWORD_SUCCESS
-    }
   }
 }
 const usersService = new UsersServices()

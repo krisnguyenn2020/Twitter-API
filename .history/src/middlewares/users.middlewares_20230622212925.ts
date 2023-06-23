@@ -59,7 +59,6 @@ const forgotPasswordTokenSchema: ParamSchema = {
   trim: true,
   custom: {
     options: async (value: string, { req }) => {
-      console.log(req.body)
       if (!value) {
         throw new ErrorWithStatus({
           message: USERS_MESSAGES.FORGOT_PASSWORD_TOKEN_IS_REQUIRED,
@@ -85,7 +84,6 @@ const forgotPasswordTokenSchema: ParamSchema = {
             status: HTTP_STATUS.UNAUTHORIZED
           })
         }
-        req.decoded_forgot_password_token = decoded_forgot_password_token
       } catch (error) {
         throw new ErrorWithStatus({
           message: capitalize((error as JsonWebTokenError).message),
@@ -333,9 +331,8 @@ export const forgotPasswordValidator = validate(
 export const verifyForgotPasswordTokenValidator = validate(
   checkSchema(
     {
-      forgot_password_token: forgotPasswordTokenSchema
-    },
-    ['body']
+      forgotPasswordToken: forgotPasswordTokenSchema,
+    }, ['body']
   )
 )
 export const resetPasswordValidator = validate(

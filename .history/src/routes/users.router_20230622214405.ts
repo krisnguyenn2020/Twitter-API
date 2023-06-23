@@ -93,6 +93,6 @@ usersRouter.post(
  * Body: { forgot_password_token: string, password: string, confirm_password: string }
  * 
  */
-usersRouter.post('/reset-password', resetPasswordValidator, wrapRequestHandler(resetPasswordController))
+usersRouter.post('/verify-forgot-password', resetPasswordValidator, wrapRequestHandler(resetPasswordController))
 
 export default usersRouter

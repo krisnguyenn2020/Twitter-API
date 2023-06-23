@@ -161,7 +161,7 @@ class UsersServices {
   }
   async forgotPassword(user_id: string) {
     const forgot_password_token = await this.signForgotPasswordToken(user_id)
-    await databaseService.users.updateOne({ _id: new ObjectId(user_id) }, [
+    databaseService.users.updateOne({ _id: new ObjectId(user_id) }, [
       {
         $set: {
           forgot_password_token,
@@ -173,21 +173,6 @@ class UsersServices {
     console.log('Forgot password token: ', forgot_password_token)
     return {
       message: USERS_MESSAGES.VERIFY_FORGOT_PASSWORD_SUCCESS
-    }
-  }
-  async resetPassword(user_id: string, password: string) {
-    await databaseService.users.updateOne(
-      { _id: new ObjectId(user_id) },
-      [{
-        $set: {
-          forgot_password_token: '',
-          password: hashPassword(password),
-          updated_at: '$$NOW',
-        }
-      }]
-    )
-    return {
-      message: USERS_MESSAGES.RESET_PASSWORD_SUCCESS
     }
   }
 }

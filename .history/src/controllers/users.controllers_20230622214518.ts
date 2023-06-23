@@ -120,5 +120,4 @@ export const resetPasswordController = async (
   const { user_id } = req.decoded_forgot_password_token as TokenPayload
   const { password } = req.body
   const result = await usersService.resetPassword(user_id, password)
-  return res.json(result)
 }
