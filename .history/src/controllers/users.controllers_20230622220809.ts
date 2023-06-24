@@ -23,7 +23,7 @@ export const loginController = async (req: Request<ParamsDictionary, any, LoginR
   // console.log("🚀 ~ file: users.controllers.ts:8 ~ loginController ~ user:", user)
   const user_id = user._id as ObjectId
   // console.log("🚀 ~ file: users.controllers.ts:10 ~ loginController ~ user_id:", _id)
-  const result = await usersService.login({ user_id: user_id.toString(), verify: user.verify })
+  const result = await usersService.login(user_id.toString())
   return res.json({
     message: USERS_MESSAGES.LOGIN_SUCCESS,
     result
@@ -103,8 +103,8 @@ export const forgotPasswordController = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { _id, verify } = req.user as User
-  const result = await usersService.forgotPassword({ user_id: (_id as ObjectId).toString(), verify })
+  const { _id } = req.user as User
+  const result = await usersService.forgotPassword((_id as ObjectId).toString())
   return res.json(result)
 }
 export const verifyForgotPasswordController = async (req: Request, res: Response, next: NextFunction) => {
@@ -123,13 +123,9 @@ export const resetPasswordController = async (
   return res.json(result)
 }
 export const getMeController = async (req: Request, res: Response, next: NextFunction) => {
-  const { user_id } = req.decoded_authorization as TokenPayload
+  const { user_id} = req.decoded_authorization as TokenPayload
   const user = await usersService.getMe(user_id)
   return res.json({
     message: USERS_MESSAGES.GET_ME_SUCCESS,
-    user
   })
-}
-export const updateMeController = async (req: Request, res: Response, next: NextFunction) => {
-  return res.json({})
 }

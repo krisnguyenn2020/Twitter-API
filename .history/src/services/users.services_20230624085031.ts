@@ -106,7 +106,7 @@ class UsersServices {
     return Boolean(user)
   }
 
-  async login({ user_id, verify }: { user_id: string, verify: UserVerifyStatus }) {
+  async login({user_id, verify}: {user_id: string, verify: UserVerifyStatus}) {
     // Access token was not stored in database because it is stateless
     // Return access token to client so that client can store it in cookie or local storage
     const [access_token, refresh_token] = await this.signAccessAndRefreshToken({
@@ -129,7 +129,7 @@ class UsersServices {
     // time: Create updated data
     // time: MongoDB updateOne is after create updated data
     const [token] = await Promise.all([
-      this.signAccessAndRefreshToken({ user_id, verify: UserVerifyStatus.Verified }),
+      this.signAccessAndRefreshToken(user_id),
       await databaseService.users.updateOne(
         { _id: new ObjectId(user_id) },
         {
@@ -149,7 +149,7 @@ class UsersServices {
     }
   }
   async resendVerifyEmail(user_id: string) {
-    const email_verify_token = await this.signEmailVerifyToken({ user_id, verify: UserVerifyStatus.Unverified })
+    const email_verify_token = await this.signEmailVerifyToken(user_id)
     // Gỉa bộ gửi email
     console.log('Rensend verify email: ', email_verify_token)
 
@@ -169,8 +169,8 @@ class UsersServices {
       message: USERS_MESSAGES.RESEND_VERIFY_EMAIL_SUCCESS
     }
   }
-  async forgotPassword({ user_id, verify }: { user_id: string, verify: UserVerifyStatus }) {
-    const forgot_password_token = await this.signForgotPasswordToken({ user_id, verify })
+  async forgotPassword(user_id: string) {
+    const forgot_password_token = await this.signForgotPasswordToken(user_id)
     await databaseService.users.updateOne({ _id: new ObjectId(user_id) }, [
       {
         $set: {

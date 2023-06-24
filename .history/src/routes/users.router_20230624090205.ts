@@ -20,7 +20,8 @@ import {
   registerValidator,
   resetPasswordValidator,
   verifiedUserValidator,
-  verifyForgotPasswordTokenValidator
+  verifyForgotPasswordTokenValidator,
+
 } from '~/middlewares/users.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers'
 
@@ -72,7 +73,7 @@ usersRouter.post('/resend-verify-email', accessTokenValidator, resendVerifyEmail
  * Path: /forgot-password
  * Method: POST
  * Body: { email: string }
- *
+ * 
  */
 usersRouter.post('/forgot-password', forgotPasswordValidator, wrapRequestHandler(forgotPasswordController))
 
@@ -81,7 +82,7 @@ usersRouter.post('/forgot-password', forgotPasswordValidator, wrapRequestHandler
  * Path: /verify-forgot-password
  * Method: POST
  * Body: { forgot_password_token: string }
- *
+ * 
  */
 usersRouter.post(
   '/verify-forgot-password',
@@ -93,7 +94,7 @@ usersRouter.post(
  * Path: /reset-password
  * Method: POST
  * Body: { forgot_password_token: string, password: string, confirm_password: string }
- *
+ * 
  */
 usersRouter.post('/reset-password', resetPasswordValidator, wrapRequestHandler(resetPasswordController))
 
@@ -102,7 +103,7 @@ usersRouter.post('/reset-password', resetPasswordValidator, wrapRequestHandler(r
  * Path: /me
  * Method: GET
  * Body: { Authorization: Bear <access_token> }
- *
+ * 
  */
 usersRouter.get('/me', accessTokenValidator, wrapRequestHandler(getMeController))
 /**
@@ -111,7 +112,7 @@ usersRouter.get('/me', accessTokenValidator, wrapRequestHandler(getMeController)
  * Method: PATCH
  * Header: { Authorization: Bear <access_token> }
  * Body: UserSchema
- *
+ * 
  */
-usersRouter.patch('/me', accessTokenValidator, verifiedUserValidator, wrapRequestHandler(updateMeController))
+usersRouter.patch('/me', accessTokenValidator,verifiedUserValidator, wrapRequestHandler(updateMeController))
 export default usersRouter

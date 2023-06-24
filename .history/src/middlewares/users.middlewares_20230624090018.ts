@@ -353,13 +353,11 @@ export const resetPasswordValidator = validate(
 )
 export const verifiedUserValidator = (req: Request, res: Response, next: NextFunction) => {
   const { verify } = req.decoded_authorization as TokenPayload
-  console.log(verify)
-  if (verify !== UserVerifyStatus.Verified) {
-    return next(
-      new ErrorWithStatus({
-        message: USERS_MESSAGES.USER_NOT_VERIFIED,
-        status: HTTP_STATUS.FORBIDDEN
-      })
-    )
-  } next()
+  if (verify === UserVerifyStatus.Unverified) {
+    return next(new ErrorWithStatus({
+      message: USERS_MESSAGES.USER_NOT_VERIFIED,
+      status: HTTP_STATUS.FORBIDDEN
+    }))
+  }
+
 }

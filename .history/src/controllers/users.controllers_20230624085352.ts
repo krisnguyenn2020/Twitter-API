@@ -130,6 +130,3 @@ export const getMeController = async (req: Request, res: Response, next: NextFun
     user
   })
 }
-export const updateMeController = async (req: Request, res: Response, next: NextFunction) => {
-  return res.json({})
-}

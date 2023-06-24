@@ -169,7 +169,7 @@ class UsersServices {
       message: USERS_MESSAGES.RESEND_VERIFY_EMAIL_SUCCESS
     }
   }
-  async forgotPassword({ user_id, verify }: { user_id: string, verify: UserVerifyStatus }) {
+  async forgotPassword({user_id, verify}:{user_id: string, verify: UserVerifyStatus}) {
     const forgot_password_token = await this.signForgotPasswordToken({ user_id, verify })
     await databaseService.users.updateOne({ _id: new ObjectId(user_id) }, [
       {

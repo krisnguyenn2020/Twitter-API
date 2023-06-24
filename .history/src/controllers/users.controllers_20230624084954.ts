@@ -103,8 +103,8 @@ export const forgotPasswordController = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { _id, verify } = req.user as User
-  const result = await usersService.forgotPassword({ user_id: (_id as ObjectId).toString(), verify })
+  const { _id } = req.user as User
+  const result = await usersService.forgotPassword((_id as ObjectId).toString())
   return res.json(result)
 }
 export const verifyForgotPasswordController = async (req: Request, res: Response, next: NextFunction) => {
@@ -129,7 +129,4 @@ export const getMeController = async (req: Request, res: Response, next: NextFun
     message: USERS_MESSAGES.GET_ME_SUCCESS,
     user
   })
-}
-export const updateMeController = async (req: Request, res: Response, next: NextFunction) => {
-  return res.json({})
 }

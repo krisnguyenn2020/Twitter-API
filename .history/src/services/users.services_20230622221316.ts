@@ -11,12 +11,11 @@ import { USERS_MESSAGES } from '~/constants/messages'
 // Class style
 config()
 class UsersServices {
-  private signAccessToken({ user_id, verify }: { user_id: string, verify: UserVerifyStatus }) {
+  private signAccessToken(user_id: string) {
     return signToken({
       payload: {
         user_id,
-        token_type: TokenType.AccessToken,
-        verify
+        token_type: TokenType.AccessToken
       },
       privateKey: process.env.JWT_SECRET_ACCESS_TOKEN as string,
       options: {
@@ -24,7 +23,7 @@ class UsersServices {
       }
     })
   }
-  private signRefreshToken({ user_id, verify }: { user_id: string, verify: UserVerifyStatus }) {
+  private signRefreshToken(user_id: string) {
     return signToken({
       payload: {
         user_id,
@@ -36,7 +35,7 @@ class UsersServices {
       }
     })
   }
-  private signEmailVerifyToken({ user_id, verify }: { user_id: string, verify: UserVerifyStatus }) {
+  private signEmailVerifyToken(user_id: string) {
     return signToken({
       payload: {
         user_id,
@@ -48,7 +47,7 @@ class UsersServices {
       }
     })
   }
-  private signForgotPasswordToken({ user_id, verify }: { user_id: string, verify: UserVerifyStatus }) {
+  private signForgotPasswordToken(user_id: string) {
     return signToken({
       payload: {
         user_id,
@@ -61,17 +60,14 @@ class UsersServices {
     })
   }
 
-  private signAccessAndRefreshToken({ user_id, verify }: { user_id: string, verify: UserVerifyStatus }) {
-    return Promise.all([this.signAccessToken({ user_id, verify }), this.signRefreshToken({ user_id, verify })])
+  private signAccessAndRefreshToken(user_id: string) {
+    return Promise.all([this.signAccessToken(user_id), this.signRefreshToken(user_id)])
   }
 
   async register(payload: RegisterReqBody) {
     const user_id = new ObjectId()
     console.log('🚀 ~ file: users.services.ts:56 ~ UsersServices ~ register ~ user_id:', user_id)
-    const email_verify_token = await this.signEmailVerifyToken({
-      user_id: user_id.toString(),
-      verify: UserVerifyStatus.Unverified
-    })
+    const email_verify_token = await this.signEmailVerifyToken(user_id.toString())
     // console.log('🚀 ~ file: users.services.ts:57 ~ UsersServices ~ register ~ email_verify_token:', email_verify_token)
     await databaseService.users.insertOne(
       // This object User only contains the fields that we want to insert into the database
@@ -85,10 +81,7 @@ class UsersServices {
       })
     )
     // Sign access token and refresh token after register successfully asynchorously
-    const [access_token, refresh_token] = await this.signAccessAndRefreshToken({
-      user_id: user_id.toString(),
-      verify: UserVerifyStatus.Unverified
-    })
+    const [access_token, refresh_token] = await this.signAccessAndRefreshToken(user_id.toString())
     // Insert refresh token into database
     await databaseService.refreshToken.insertOne(
       new RefreshToken({ user_id: new ObjectId(user_id), token: refresh_token })
@@ -106,13 +99,10 @@ class UsersServices {
     return Boolean(user)
   }
 
-  async login({ user_id, verify }: { user_id: string, verify: UserVerifyStatus }) {
+  async login(user_id: string) {
     // Access token was not stored in database because it is stateless
     // Return access token to client so that client can store it in cookie or local storage
-    const [access_token, refresh_token] = await this.signAccessAndRefreshToken({
-      user_id: user_id.toString(),
-      verify: UserVerifyStatus.Verified
-    })
+    const [access_token, refresh_token] = await this.signAccessAndRefreshToken(user_id)
     await databaseService.refreshToken.insertOne(
       new RefreshToken({ user_id: new ObjectId(user_id), token: refresh_token })
     )
@@ -129,7 +119,7 @@ class UsersServices {
     // time: Create updated data
     // time: MongoDB updateOne is after create updated data
     const [token] = await Promise.all([
-      this.signAccessAndRefreshToken({ user_id, verify: UserVerifyStatus.Verified }),
+      this.signAccessAndRefreshToken(user_id),
       await databaseService.users.updateOne(
         { _id: new ObjectId(user_id) },
         {
@@ -149,7 +139,7 @@ class UsersServices {
     }
   }
   async resendVerifyEmail(user_id: string) {
-    const email_verify_token = await this.signEmailVerifyToken({ user_id, verify: UserVerifyStatus.Unverified })
+    const email_verify_token = await this.signEmailVerifyToken(user_id)
     // Gỉa bộ gửi email
     console.log('Rensend verify email: ', email_verify_token)
 
@@ -169,8 +159,8 @@ class UsersServices {
       message: USERS_MESSAGES.RESEND_VERIFY_EMAIL_SUCCESS
     }
   }
-  async forgotPassword({ user_id, verify }: { user_id: string, verify: UserVerifyStatus }) {
-    const forgot_password_token = await this.signForgotPasswordToken({ user_id, verify })
+  async forgotPassword(user_id: string) {
+    const forgot_password_token = await this.signForgotPasswordToken(user_id)
     await databaseService.users.updateOne({ _id: new ObjectId(user_id) }, [
       {
         $set: {
@@ -186,30 +176,27 @@ class UsersServices {
     }
   }
   async resetPassword(user_id: string, password: string) {
-    await databaseService.users.updateOne({ _id: new ObjectId(user_id) }, [
-      {
+    await databaseService.users.updateOne(
+      { _id: new ObjectId(user_id) },
+      [{
         $set: {
           forgot_password_token: '',
           password: hashPassword(password),
-          updated_at: '$$NOW'
+          updated_at: '$$NOW',
         }
-      }
-    ])
+      }]
+    )
     return {
       message: USERS_MESSAGES.RESET_PASSWORD_SUCCESS
     }
   }
   async getMe(user_id: string) {
-    const user = await databaseService.users.findOne(
-      { _id: new ObjectId(user_id) },
-      {
-        projection: {
-          password: 0,
-          email_verify_token: 0,
-          forgot_password_token: 0
-        }
-      }
-    )
+    const user = await databaseService.users.findOne({ _id: new ObjectId(user_id) }, {
+      projection: {
+        password: 0,
+        email_verify_token: 0,
+        forgot_password_token: 0
+    })
     return user
   }
 }
