@@ -131,5 +131,5 @@ usersRouter.patch(
  * 
  *
  */
-usersRouter.get('/:username', accessTokenValidator, wrapRequestHandler(getProfileController))
+usersRouter.get('/me', accessTokenValidator, wrapRequestHandler(getProfileController))
 export default usersRouter

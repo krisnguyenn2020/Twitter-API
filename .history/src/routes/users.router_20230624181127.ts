@@ -9,10 +9,8 @@ import {
   verifyForgotPasswordController,
   resetPasswordController,
   getMeController,
-  updateMeController,
-  getProfileController
+  updateMeController
 } from '~/controllers/users.controllers'
-import { filterMiddleware } from '~/middlewares/common.middlewares'
 import {
   accessTokenValidator,
   emailVerifyTokenValidator,
@@ -21,7 +19,6 @@ import {
   refreshTokenValidator,
   registerValidator,
   resetPasswordValidator,
-  updateMeValidator,
   verifiedUserValidator,
   verifyForgotPasswordTokenValidator
 } from '~/middlewares/users.middlewares'
@@ -116,20 +113,5 @@ usersRouter.get('/me', accessTokenValidator, wrapRequestHandler(getMeController)
  * Body: UserSchema
  *
  */
-usersRouter.patch(
-  '/me',
-  accessTokenValidator,
-  verifiedUserValidator,
-  updateMeValidator,
-  filterMiddleware(['name', 'date_of_birth', 'bio', 'location', 'website', 'avatar', 'username', 'cover_photo']),
-  wrapRequestHandler(updateMeController)
-)
-/**
- * Description: Get user profile
- * Path: /:username
- * Method: GET
- * 
- *
- */
-usersRouter.get('/:username', accessTokenValidator, wrapRequestHandler(getProfileController))
+usersRouter.patch('/me', accessTokenValidator, verifiedUserValidator,updateMeValidator, wrapRequestHandler(updateMeController))
 export default usersRouter

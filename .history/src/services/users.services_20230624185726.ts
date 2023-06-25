@@ -8,12 +8,10 @@ import RefreshToken from '~/models/schemas/RefreshToken.schema'
 import { ObjectId, ReturnDocument } from 'mongodb'
 import { config } from 'dotenv'
 import { USERS_MESSAGES } from '~/constants/messages'
-import { ErrorWithStatus } from '~/models/Errors'
-import HTTP_STATUS from '~/constants/httpStatus'
 // Class style
 config()
 class UsersServices {
-  private signAccessToken({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
+  private signAccessToken({ user_id, verify }: { user_id: string, verify: UserVerifyStatus }) {
     return signToken({
       payload: {
         user_id,
@@ -26,7 +24,7 @@ class UsersServices {
       }
     })
   }
-  private signRefreshToken({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
+  private signRefreshToken({ user_id, verify }: { user_id: string, verify: UserVerifyStatus }) {
     return signToken({
       payload: {
         user_id,
@@ -38,7 +36,7 @@ class UsersServices {
       }
     })
   }
-  private signEmailVerifyToken({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
+  private signEmailVerifyToken({ user_id, verify }: { user_id: string, verify: UserVerifyStatus }) {
     return signToken({
       payload: {
         user_id,
@@ -50,7 +48,7 @@ class UsersServices {
       }
     })
   }
-  private signForgotPasswordToken({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
+  private signForgotPasswordToken({ user_id, verify }: { user_id: string, verify: UserVerifyStatus }) {
     return signToken({
       payload: {
         user_id,
@@ -63,7 +61,7 @@ class UsersServices {
     })
   }
 
-  private signAccessAndRefreshToken({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
+  private signAccessAndRefreshToken({ user_id, verify }: { user_id: string, verify: UserVerifyStatus }) {
     return Promise.all([this.signAccessToken({ user_id, verify }), this.signRefreshToken({ user_id, verify })])
   }
 
@@ -80,7 +78,6 @@ class UsersServices {
       new User({
         _id: user_id,
         ...payload,
-        username: `user_${user_id.toString()}`,
         email_verify_token,
         date_of_birth: new Date(payload.date_of_birth),
         // Hash password using SHA-256
@@ -109,7 +106,7 @@ class UsersServices {
     return Boolean(user)
   }
 
-  async login({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
+  async login({ user_id, verify }: { user_id: string, verify: UserVerifyStatus }) {
     // Access token was not stored in database because it is stateless
     // Return access token to client so that client can store it in cookie or local storage
     const [access_token, refresh_token] = await this.signAccessAndRefreshToken({
@@ -172,7 +169,7 @@ class UsersServices {
       message: USERS_MESSAGES.RESEND_VERIFY_EMAIL_SUCCESS
     }
   }
-  async forgotPassword({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
+  async forgotPassword({ user_id, verify }: { user_id: string, verify: UserVerifyStatus }) {
     const forgot_password_token = await this.signForgotPasswordToken({ user_id, verify })
     await databaseService.users.updateOne({ _id: new ObjectId(user_id) }, [
       {
@@ -217,48 +214,21 @@ class UsersServices {
   }
   async updateMe(user_id: string, payload: UpdateMeReqBody) {
     const _payload = payload.date_of_birth ? { ...payload, date_of_birth: new Date(payload.date_of_birth) } : payload
-    const user = await databaseService.users.findOneAndUpdate(
-      { _id: new ObjectId(user_id) },
-      [
-        {
-          $set: {
-            ...payload,
-            updated_at: '$$NOW'
-          }
-        }
-      ],
+    await databaseService.users.findOneAndUpdate({ _id: new ObjectId(user_id) }, [
       {
-        returnDocument: 'after',
-        projection: {
-          password: 0,
-          email_verify_token: 0,
-          forgot_password_token: 0
+        $set: {
+          ...payload,
+          updated_at: '$$NOW'
         }
       }
-    )
-    return user.value
-  }
-  async getProfile(username: string) {
-    const user = await databaseService.users.findOne(
-      { username },
-      {
-        projection: {
-          password: 0,
-          email_verify_token: 0,
-          forgot_password_token: 0,
-          verify: 0,
-          created_at: 0,
-          updated_at: 0
-        }
+    ], {
+      returnDocument: 'after', projection: {
+
       }
-    )
-    if (user === null) {
-      throw new ErrorWithStatus({
-        message: USERS_MESSAGES.USER_NOT_FOUND,
-        status: HTTP_STATUS.NOT_FOUND
-      })
+    })
+    return {
+      message: USERS_MESSAGES.UPDATE_ME_SUCCESS
     }
-    return user
   }
 }
 const usersService = new UsersServices()

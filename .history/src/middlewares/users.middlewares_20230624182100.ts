@@ -16,7 +16,6 @@ import { config } from 'dotenv'
 import { ObjectId } from 'mongodb'
 import { UserVerifyStatus } from '~/constants/enums'
 import { TokenPayload } from '~/models/requests/User.requests'
-import { REGEX_USERNAME } from '~/constants/regex'
 
 config()
 const passwordSchema: ParamSchema = {
@@ -43,21 +42,6 @@ const nameSchema: ParamSchema = {
     errorMessage: USERS_MESSAGES.NAME_MUST_BE_A_STRING
   }
 }
-const imageSchema: ParamSchema = {
-  optional: true,
-  isString: {
-    errorMessage: USERS_MESSAGES.IMAGE_URL_MUST_BE_STRING
-  },
-  trim: true,
-  isLength: {
-    options: {
-      min: 1,
-      max: 400
-    },
-    errorMessage: USERS_MESSAGES.IMAGE_URL_LENGTH
-  }
-}
-
 const dateOfBirthSchema: ParamSchema = {
   notEmpty: {
     errorMessage: 'Date of birth is required'
@@ -239,8 +223,8 @@ export const accessTokenValidator = validate(
                 token: access_token,
                 secretOrPublicKey: process.env.JWT_SECRET_ACCESS_TOKEN as string
               })
-              // semi-colon because (req as Request()
-              ;(req as Request).decoded_authorization = decoded_authorization
+                // semi-colon because (req as Request()
+                ; (req as Request).decoded_authorization = decoded_authorization
               console.log(1)
             } catch (error) {
               throw new ErrorWithStatus({
@@ -316,7 +300,7 @@ export const emailVerifyTokenValidator = validate(
               token: value,
               secretOrPublicKey: process.env.JWT_SECRET_EMAIL_VERIFY_TOKEN as string
             })
-            ;(req as Request).decoded_email_verify_token = decoded_email_verify_token
+              ; (req as Request).decoded_email_verify_token = decoded_email_verify_token
           } catch (error) {
             throw new ErrorWithStatus({
               message: capitalize((error as JsonWebTokenError).message),
@@ -385,75 +369,7 @@ export const verifiedUserValidator = (req: Request, res: Response, next: NextFun
 }
 export const updateMeValidator = validate(
   checkSchema({
-    name: {
-      ...nameSchema,
-      optional: true,
-      notEmpty: undefined
-    },
-    date_of_birth: { ...dateOfBirthSchema, optional: true },
-    bio: {
-      optional: true,
-      isString: {
-        errorMessage: USERS_MESSAGES.BIO_MUST_BE_STRING
-      },
-      trim: true,
-      isLength: {
-        options: {
-          min: 1,
-          max: 200
-        },
-        errorMessage: USERS_MESSAGES.BIO_LENGTH
-      }
-    },
-    location: {
-      optional: true,
-      isString: {
-        errorMessage: USERS_MESSAGES.LOCATION_MUST_BE_STRING
-      },
-      trim: true,
-      isLength: {
-        options: {
-          min: 1,
-          max: 200
-        },
-        errorMessage: USERS_MESSAGES.LOCATION_LENGTH
-      }
-    },
-    website: {
-      optional: true,
-      isString: {
-        errorMessage: USERS_MESSAGES.WEBSITE_MUST_BE_STRING
-      },
-      trim: true,
-      isLength: {
-        options: {
-          min: 1,
-          max: 200
-        },
-        errorMessage: USERS_MESSAGES.WEBSITE_LENGTH
-      }
-    },
-    username: {
-      optional: true,
-      isString: {
-        errorMessage: USERS_MESSAGES.USERNAME_MUST_BE_STRING
-      },
-      trim: true,
-      custom: {
-        options: async (value: string, { req }) => {
-          if (!REGEX_USERNAME.test(value)) {
-            throw Error(USERS_MESSAGES.USERNAME_INVALID)
-          }
-          const user = await databaseService.users.findOne({ username: value })
-          // Nếu đã tồn tại username này trong db
-          // thì chúng ta không cho phép update
-          if (user) {
-            throw Error(USERS_MESSAGES.USERNAME_EXISTED)
-          }
-        }
-      }
-    },
-    avatar: imageSchema,
-    cover_photo: imageSchema
+    name: nameSchema,
+    date_of_birth: dateOfBirthSchema 
   })
 )

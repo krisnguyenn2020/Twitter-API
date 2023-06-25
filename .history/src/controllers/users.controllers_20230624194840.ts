@@ -149,8 +149,5 @@ export const getProfileController = async (req: Request, res: Response, next: Ne
   const { username } = req.params
   const user = await usersService.getProfile(username)
   console.log(username)
-  return res.json({
-    message: USERS_MESSAGES.GET_PROFILE_SUCCESS,
-    result: user
-  })
+  return res.json({})
 }
