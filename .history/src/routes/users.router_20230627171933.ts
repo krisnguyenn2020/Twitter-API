@@ -37,12 +37,12 @@ import { wrapRequestHandler } from '~/utils/handlers'
 const usersRouter = Router()
 
 /**
- * Description: OAuth with Google
- * path: /oauth/google
- * method: GET
- * Query: {code: string}
+ * Description: Login user
+ * path: /login
+ * method: POST
+ * body: {email: string, password: string}
  */
-usersRouter.get('/oauth/google',  wrapRequestHandler(oauthController))
+usersRouter.post('/oauth/google',  wrapRequestHandler(oauthController))
 /**
  * Description: Login user
  * path: /login
