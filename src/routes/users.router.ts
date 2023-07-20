@@ -42,7 +42,7 @@ const usersRouter = Router()
  * method: GET
  * Query: {code: string}
  */
-usersRouter.get('/oauth/google',  wrapRequestHandler(oauthController))
+usersRouter.get('/oauth/google', wrapRequestHandler(oauthController))
 /**
  * Description: Login user
  * path: /login
@@ -142,7 +142,7 @@ usersRouter.patch(
  * Description: Get user profile
  * Path: /:username
  * Method: GET
- * 
+ *
  *
  */
 usersRouter.get('/:username', wrapRequestHandler(getProfileController))

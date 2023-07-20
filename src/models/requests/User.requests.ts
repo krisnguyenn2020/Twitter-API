@@ -1,6 +1,6 @@
 // declare interface
-import { JwtPayload } from 'jsonwebtoken';
-import { TokenType } from '~/constants/enums';
+import { JwtPayload } from 'jsonwebtoken'
+import { TokenType } from '~/constants/enums'
 import { ParamsDictionary } from 'express-serve-static-core'
 
 export interface LoginReqBody {
@@ -30,7 +30,7 @@ export interface LogoutReqBody {
 export interface ForgotPasswordReqBody {
   email: string
 }
-export interface GetProfileReqParams  {
+export interface GetProfileReqParams {
   username: string
 }
 

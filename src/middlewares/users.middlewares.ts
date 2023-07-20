@@ -261,8 +261,8 @@ export const accessTokenValidator = validate(
                 token: access_token,
                 secretOrPublicKey: process.env.JWT_SECRET_ACCESS_TOKEN as string
               })
-                // semi-colon because (req as Request()
-                ; (req as Request).decoded_authorization = decoded_authorization
+              // semi-colon because (req as Request()
+              ;(req as Request).decoded_authorization = decoded_authorization
               console.log(1)
             } catch (error) {
               throw new ErrorWithStatus({
@@ -338,7 +338,7 @@ export const emailVerifyTokenValidator = validate(
               token: value,
               secretOrPublicKey: process.env.JWT_SECRET_EMAIL_VERIFY_TOKEN as string
             })
-              ; (req as Request).decoded_email_verify_token = decoded_email_verify_token
+            ;(req as Request).decoded_email_verify_token = decoded_email_verify_token
           } catch (error) {
             throw new ErrorWithStatus({
               message: capitalize((error as JsonWebTokenError).message),
