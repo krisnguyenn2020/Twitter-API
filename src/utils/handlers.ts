@@ -1,13 +1,9 @@
-// Note: Handlers for async functions
-import { Response, Request, NextFunction, RequestHandler } from 'express'
+import { Request, Response, NextFunction, RequestHandler } from 'express'
 
-export const wrapRequestHandler = (func: RequestHandler) => {
-  return async function (req: Request, res: Response, next: NextFunction) {
-    // short version but only works with Async/Await
-    // Promise.resolve(func(req, res, next)).catch(next)
-
+export const wrapRequestHandler = <P>(func: RequestHandler<P>) => {
+  return async (req: Request<P>, res: Response, next: NextFunction) => {
     try {
-      func(req, res, next)
+      await func(req, res, next)
     } catch (error) {
       next(error)
     }

@@ -1,44 +1,36 @@
 import { config } from 'dotenv'
-import jwt, { JwtPayload, SignOptions } from 'jsonwebtoken'
+import jwt, { SignOptions } from 'jsonwebtoken'
+import { TokenPayload } from '~/models/requests/User.requests'
 config()
-// pass parameter an object that contains payload, secret, options
-// secret and options already have default value
-export const signToken = (
-  {
-    payload,
-    secret = process.env.JWT_SECRET as string,
-    options = {
-      algorithm: 'HS256'
-    }
-  }: {
-    // type of parameter
-    payload: string | Buffer | object
-    secret?: string
-    options?: SignOptions
-  } // return a promise that resolves a token
-) =>
-  new Promise<string>((resolve, reject) => {
-    jwt.sign(payload, secret, options, (err, token) => {
-      if (err) {
-        throw reject(err)
+
+export const signToken = ({
+  payload,
+  privateKey,
+  options = {
+    algorithm: 'HS256'
+  }
+}: {
+  payload: string | Buffer | object
+  privateKey: string
+  options?: SignOptions
+}) => {
+  return new Promise<string>((resolve, reject) => {
+    jwt.sign(payload, privateKey, options, (error, token) => {
+      if (error) {
+        throw reject(error)
       }
       resolve(token as string)
     })
   })
+}
 
-export const verifyToken = ({
-  token,
-  secretOrPublicKey = process.env.JWT_SECRET as string
-}: {
-  token: string
-  secretOrPublicKey?: string
-}) => {
-  return new Promise<JwtPayload>((resolve, reject) => {
-    jwt.verify(token, secretOrPublicKey, (err, decoded) => {
-      if (err) {
-        throw reject(err)
+export const verifyToken = ({ token, secretOrPublicKey }: { token: string; secretOrPublicKey: string }) => {
+  return new Promise<TokenPayload>((resolve, reject) => {
+    jwt.verify(token, secretOrPublicKey, (error, decoded) => {
+      if (error) {
+        throw reject(error)
       }
-      resolve(decoded as JwtPayload)
+      resolve(decoded as TokenPayload)
     })
   })
 }
