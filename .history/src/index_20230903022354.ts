@@ -6,7 +6,7 @@ import mediasRouter from './routes/medias.routes'
 import { initFolder } from './utils/file'
 import { config } from 'dotenv'
 import { UPLOAD_DIR } from './constants/dir'
-import staticRouter from './routes/static.routes'
+import staticRouter from './routes/statoc.routes'
 
 config()
 

@@ -15,11 +15,12 @@ export const uploadSingleImageController = async (req: Request, res: Response, n
 
   })
 }
-// This method is used to serve image from server (more customizable)
-export const serveImageController = (req: Request, res: Response, next: NextFunction) => {
+
+export const serveImageController = async (req: Request, res: Response, next: NextFunction) => {
   const {name} = req.params
   console.log(name)
   return res.sendFile(path.resolve(UPLOAD_DIR, name), (err) => {
+    console.log(err)
     if(err) {
       res.status((err as any).status).send('Not found')
     }

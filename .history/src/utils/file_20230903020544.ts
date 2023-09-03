@@ -15,7 +15,7 @@ export const initFolder = () => {
 export const handleUploadSingleImage = async (req: Request) => {
   const formidable = (await import('formidable')).default
   const form = formidable({
-    uploadDir: UPLOAD_DIR,
+    uploadDir: UPLOAD_TEMP_DIR,
     maxFiles: 1,
     keepExtensions: true,
     maxFileSize: 4000 * 1024, // 4mb

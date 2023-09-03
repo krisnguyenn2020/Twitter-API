@@ -2,11 +2,11 @@ import fs from 'fs'
 import path from 'path'
 import { Request } from 'express'
 import { File } from 'formidable'
-import { UPLOAD_DIR, UPLOAD_TEMP_DIR } from '~/constants/dir'
+import { UPLOAD_TEMP_DIR } from '~/constants/dir'
 
 export const initFolder = () => {
-  if (!fs.existsSync(UPLOAD_DIR)) {
-    fs.mkdirSync(UPLOAD_DIR, {
+  if (!fs.existsSync(UPLOAD_TEMP_DIR)) {
+    fs.mkdirSync(UPLOAD_TEMP_DIR, {
       recursive: true // create parent folder if not exist ( nested folder)
     })
   }
@@ -15,7 +15,7 @@ export const initFolder = () => {
 export const handleUploadSingleImage = async (req: Request) => {
   const formidable = (await import('formidable')).default
   const form = formidable({
-    uploadDir: UPLOAD_DIR,
+    uploadDir: UPLOAD_TEMP_DIR,
     maxFiles: 1,
     keepExtensions: true,
     maxFileSize: 4000 * 1024, // 4mb
